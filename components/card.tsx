@@ -10,6 +10,7 @@ import { CheckSquare, Clock, ImageIcon, Trash2, User } from "lucide-react";
 import Image from "next/image";
 import type { Card as CardType } from "./context/board-context";
 import { useBoard } from "./context/board-context";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 
 interface CardProps {
   card: CardType;
@@ -65,7 +66,7 @@ export function Card({ card, columnId, onClick }: CardProps) {
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    deleteCard(columnId, card.id);
+    deleteCard(columnId, card.id)
   };
 
   return (
@@ -75,25 +76,42 @@ export function Card({ card, columnId, onClick }: CardProps) {
       {...attributes}
       {...listeners}
       className="bg-white dark:bg-gray-700 rounded-md border-2 border-gray-200 dark:border-gray-600 shadow-sm p-3 mb-2 cursor-pointer hover:shadow-md transition-shadow relative group"
-      onClick={(e) => {
-        console.log(`clicked the card`);
-        // if (
-        //   e.target instanceof HTMLElement &&
-        //   !e.target.closest('button[data-delete-button="true"]')
-        // ) {
-        onClick();
-        // }
-      }}
+      onClick={
+        (e) => {
+          // if the click is not on the delete button, then only show the card drawer
+          if (
+            e.target instanceof HTMLElement &&
+            !e.target.closest('button[data-delete-button="true"]')
+          ) {
+            onClick();
+          }
+        }
+      }
     >
-      <Button
-        variant="ghost"
-        size="icon"
-        data-delete-button="true"
-        className="absolute top-1 right-1 h-6 w-6"
-        onClick={handleDelete}
-      >
-        <Trash2 className="h-3.5 w-3.5 text-red-500" />
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            data-delete-button="true"
+            className="absolute top-1 right-1 h-6 w-6"
+          >
+            <Trash2 className="h-3.5 w-3.5 text-red-500" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permenantly delete the card.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
       {card.image && (
         <div className="mb-2 rounded overflow-hidden">

@@ -13,6 +13,8 @@ import { Clock, Edit, ImageIcon, Plus, Save, Tag, Trash2, User, X } from "lucide
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Image from "next/image"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { useToast } from "./ui/use-toast"
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
 
 interface CardDrawerProps {
   card: CardType | null
@@ -22,6 +24,7 @@ interface CardDrawerProps {
 
 export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   const { updateCard, deleteCard } = useBoard()
+  const { toast } = useToast()
   const [editedCard, setEditedCard] = useState<CardType | null>(card ? { ...card } : null)
   const [newChecklistItem, setNewChecklistItem] = useState("")
   const [newTag, setNewTag] = useState("")
@@ -33,10 +36,16 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   const handleSave = () => {
     updateCard(columnId, editedCard)
     setIsEditing(false)
+    toast({
+      title: "Card updated",
+      description: "Card updated successfully",
+    })
   }
 
   const handleDelete = () => {
     deleteCard(columnId, card.id)
+
+    // close the drawer
     onClose()
   }
 
@@ -149,9 +158,26 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
                 <Edit className="h-5 w-5" />
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="text-red-500" onClick={handleDelete}>
-              <Trash2 className="h-5 w-5" />
-            </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-red-500">
+                    <Trash2 className="h-5 w-5" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permenantly delete the card.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
           </div>
         </SheetHeader>
 

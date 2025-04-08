@@ -2,6 +2,7 @@
 
 import { nanoid } from "nanoid";
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { useToast } from "../ui/use-toast";
 
 export type ChecklistItem = {
   id: string;
@@ -128,6 +129,7 @@ const BoardContext = createContext<BoardContextType | undefined>(undefined);
 
 export function BoardProvider({ children }: { children: ReactNode }) {
   const [board, setBoard] = useState<BoardState>(initialBoard);
+  const { toast } = useToast()
 
   const addColumn = (title: string) => {
     setBoard((prev) => ({
@@ -204,6 +206,11 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         return col;
       }),
     }));
+
+    toast({
+      title: "Card deleted",
+      description: "Card deleted successfully",
+    })
   };
 
   const moveCard = (
