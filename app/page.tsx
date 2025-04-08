@@ -1,6 +1,6 @@
 "use client";
 
-import { BoardProvider } from "@/components/board-context";
+import { BoardProvider } from "@/components/context/board-context";
 import { KanbanBoard } from "@/components/kanban-board";
 import { useEffect, useState } from "react";
 

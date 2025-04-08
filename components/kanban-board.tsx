@@ -19,7 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { type Card as CardType, useBoard } from "./board-context";
+import { type Card as CardType, useBoard } from "./context/board-context";
 import { BoardHeader } from "./board-header";
 import { Card } from "./card";
 import { CardDrawer } from "./card-drawer";
@@ -116,7 +116,7 @@ export function KanbanBoard() {
       <div className="p-4">
         <BoardHeader />
       </div>
-      <div className="flex-1 p-4 overflow-hidden">
+      <div className="h-full flex-1 p-4 overflow-hidden">
         <div className="h-full overflow-x-auto">
           <DndContext
             collisionDetection={closestCenter}

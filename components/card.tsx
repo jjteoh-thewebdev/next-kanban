@@ -8,8 +8,8 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CheckSquare, Clock, ImageIcon, Trash2, User } from "lucide-react";
 import Image from "next/image";
-import type { Card as CardType } from "./board-context";
-import { useBoard } from "./board-context";
+import type { Card as CardType } from "./context/board-context";
+import { useBoard } from "./context/board-context";
 
 interface CardProps {
   card: CardType;

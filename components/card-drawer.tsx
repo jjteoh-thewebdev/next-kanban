@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, type ChangeEvent } from "react"
-import { type Card as CardType, type Priority, useBoard } from "./board-context"
+import { type Card as CardType, type Priority, useBoard } from "./context/board-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"

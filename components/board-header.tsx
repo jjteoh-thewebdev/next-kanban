@@ -3,13 +3,14 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useBoard } from "./board-context"
+import { useBoard } from "./context/board-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Settings, ImageIcon, Palette, Edit, Check } from "lucide-react"
+import { useToast } from "./ui/use-toast"
 
 export function BoardHeader() {
   const { board, updateBackground } = useBoard()
@@ -18,13 +19,14 @@ export function BoardHeader() {
   const [fileInputKey, setFileInputKey] = useState(0)
   const [boardTitle, setBoardTitle] = useState("Kanban Board")
   const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const { toast } = useToast()
 
   const handleColorChange = (newColor: string) => {
     setColor(newColor)
     updateBackground({ type: "color", value: newColor })
   }
 
-  const handleImageUrlChange = () => {
+  const handleImageUrlChange = async () => {
     if (imageUrl.trim()) {
       updateBackground({ type: "image", value: imageUrl })
     }
@@ -33,15 +35,34 @@ export function BoardHeader() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      if (file.size > 4 * 1024 * 1024) {
+        // clear the file input
+        // key={fileInputKey}, setting key with new value will trigger react to re-render the file input(nullify the file input)
+        setFileInputKey((key) => key + 1)
+
+        toast({
+          title: "File too large",
+          description: "Please upload a file smaller than 4MB",
+          variant: "destructive",
+        })
+        return
+      }
+
       const reader = new FileReader()
       reader.onload = (event) => {
         const result = event.target?.result as string
-        setImageUrl(result)
+        setImageUrl("")
         updateBackground({ type: "image", value: result })
-        setFileInputKey((prev) => prev + 1) // Reset file input
+        // key={fileInputKey}, setting key with new value will trigger react to re-render the file input(nullify the file input)
+        setFileInputKey((key) => key + 1) // Reset file input
       }
       reader.readAsDataURL(file)
     }
+  }
+
+  const handleClearImage = () => {
+    setImageUrl("")
+    updateBackground({ type: "color", value: "#f0f4f8" })
   }
 
   const handleTitleSave = () => {
@@ -56,8 +77,8 @@ export function BoardHeader() {
   const predefinedColors = [
     "#f0f4f8", // Light blue/gray
     "#f3f4f6", // Light gray
-    "#eef2ff", // Light indigo
-    "#ecfdf5", // Light green
+    "#6898f7", // Light indigo
+    "#90d6a2", // Light green
     "#fff7ed", // Light orange
     "#fef2f2", // Light red
     "#f8fafc", // Light slate
@@ -151,7 +172,7 @@ export function BoardHeader() {
                     key={presetImage}
                     className="h-20 rounded-md cursor-pointer overflow-hidden"
                     onClick={() => {
-                      setImageUrl(presetImage)
+                      setImageUrl("")
                       updateBackground({ type: "image", value: presetImage })
                     }}
                   >
@@ -179,6 +200,7 @@ export function BoardHeader() {
               <div className="space-y-2">
                 <Label htmlFor="image-upload">Upload Image</Label>
                 <Input key={fileInputKey} id="image-upload" type="file" accept="image/*" onChange={handleImageUpload} />
+                <Button className="w-full" disabled={board.background.type !== 'image'} onClick={handleClearImage}>Clear Image</Button>
               </div>
             </TabsContent>
           </Tabs>
