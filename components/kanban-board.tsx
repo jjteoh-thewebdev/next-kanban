@@ -8,7 +8,10 @@ import {
   type DragOverEvent,
   DragOverlay,
   type DragStartEvent,
+  PointerSensor,
   closestCenter,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -23,6 +26,15 @@ import { CardDrawer } from "./card-drawer";
 import { Column } from "./column";
 
 export function KanbanBoard() {
+  // Add PointerSensor to dnd sensor(handle mouse, touch, pen/stylus)
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // to distinguish between click and drag
+      },
+    })
+  );
+
   const { board, addColumn, moveCard } = useBoard();
   const [activeCard, setActiveCard] = useState<CardType | null>(null);
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
@@ -111,6 +123,7 @@ export function KanbanBoard() {
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
+            sensors={sensors}
           >
             <div className="flex items-start gap-4 h-full pb-4">
               {board.columns.map((column) => (
@@ -167,12 +180,14 @@ export function KanbanBoard() {
 
             <DragOverlay>
               {activeCard && activeColumnId && (
-                <div className="w-[272px]">
+                <div
+                  className="w-[272px]"
+                >
                   <Card
                     card={activeCard}
                     columnId={activeColumnId}
                     onClick={() => {
-                      console.log("clicked");
+                      handleCardClick(activeCard, activeColumnId);
                     }}
                   />
                 </div>
@@ -182,11 +197,16 @@ export function KanbanBoard() {
         </div>
       </div>
 
-      <CardDrawer
-        card={selectedCard?.card || null}
-        columnId={selectedCard?.columnId || null}
-        onClose={handleCloseDrawer}
-      />
+      {
+        selectedCard && (
+          <CardDrawer
+            card={selectedCard?.card || null}
+            columnId={selectedCard?.columnId || null}
+            onClose={handleCloseDrawer}
+          />
+        )
+      }
+    
     </div>
   );
 }

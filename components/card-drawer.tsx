@@ -124,7 +124,8 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   }
 
   return (
-    <Sheet open={!!card} onOpenChange={() => onClose()}>
+    <>
+      <Sheet key={card?.id} open={!!card} onOpenChange={() => onClose()}>
       <SheetContent className="w-full sm:max-w-md md:max-w-lg overflow-y-auto">
         <SheetHeader className="flex flex-row items-center justify-between">
           <SheetTitle className="flex-1">
@@ -345,6 +346,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
           </div>
         </div>
       </SheetContent>
-    </Sheet>
+      </Sheet>
+    </>
   )
 }

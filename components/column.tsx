@@ -112,7 +112,9 @@ export function Column({ column, onCardClick }: ColumnProps) {
 
       <div className="overflow-y-auto flex-grow pr-1 -mr-1">
         {column.cards.map((card) => (
-          <Card key={card.id} card={card} columnId={column.id} onClick={() => onCardClick(card, column.id)} />
+          <Card key={card.id} card={card} columnId={column.id} onClick={() => 
+            onCardClick(card, column.id)
+          } />
         ))}
       </div>
 
