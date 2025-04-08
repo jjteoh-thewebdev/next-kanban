@@ -105,7 +105,7 @@ export function KanbanBoard() {
 
   return (
     <div
-      className="min-h-screen flex flex-col transition-colors"
+      className="min-h-screen overflow-hidden flex flex-col transition-colors"
       style={{
         background:
           board.background.type === "color"
