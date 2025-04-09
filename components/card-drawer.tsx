@@ -17,7 +17,7 @@ import { useToast } from "./ui/use-toast"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { getInitials, getColorFromName } from "@/lib/utils"
+import { getInitials, getColorFromName, formatDate, getPriorityColor } from "@/lib/utils"
 
 interface CardDrawerProps {
   card: CardType | null
@@ -26,15 +26,20 @@ interface CardDrawerProps {
 }
 
 export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
+  // Context
   const { updateCard, deleteCard } = useBoard()
   const { toast } = useToast()
+  const isMobile = useIsMobile()
+
+  // State
   const [editedCard, setEditedCard] = useState<CardType | null>(card ? { ...card } : null)
   const [newChecklistItem, setNewChecklistItem] = useState("")
   const [newAssignee, setNewAssignee] = useState("")
   const [newTag, setNewTag] = useState("")
   const [isEditing, setIsEditing] = useState(false)
+
+  // Refs
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const isMobile = useIsMobile()
 
   if (!card || !editedCard || !columnId) return null
 
@@ -116,6 +121,8 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
     if (file) {
       const reader = new FileReader()
       reader.onload = (event) => {
+
+        // update the card with the new image
         setEditedCard({
           ...editedCard,
           image: event.target?.result as string,
@@ -132,26 +139,6 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
     })
   }
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "text-red-600 dark:text-red-400"
-      case "medium":
-        return "text-yellow-600 dark:text-yellow-400"
-      case "low":
-        return "text-green-600 dark:text-green-400"
-      default:
-        return "text-gray-600 dark:text-gray-400"
-    }
-  }
 
   return (
     <>
@@ -211,7 +198,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
         <div className="mt-6 space-y-6">
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Clock className="h-4 w-4" />
-            Created on {formatDate(editedCard.createdAt)}
+              Created on {formatDate(new Date(editedCard.createdAt))}
           </div>
 
           <div className="space-y-2">

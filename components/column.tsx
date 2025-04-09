@@ -17,17 +17,21 @@ interface ColumnProps {
 }
 
 export function Column({ column, onCardClick }: ColumnProps) {
+  // Context
   const { updateColumn, deleteColumn, addCard } = useBoard()
+  const isMobile = useIsMobile()
+
+  // State
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(column.title)
   const [isAddingCard, setIsAddingCard] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState("")
   const [maxHeight, setMaxHeight] = useState("100%")
-  const isMobile = useIsMobile()
 
   useEffect(() => {
+    // Fix responsiveness issue on mobile
+    // Adjust height based on viewport, accounting for header and padding
     const updateMaxHeight = () => {
-      // Adjust height based on viewport, accounting for header and padding
       const headerHeight = 60; // approximate header height
       const padding = isMobile ? 120 : 40; // add more padding on mobile for bottom sheet
       const height = window.innerHeight - headerHeight - padding;

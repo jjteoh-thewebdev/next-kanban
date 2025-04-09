@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
+import { format } from "date-fns";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -30,4 +31,21 @@ export function getColorFromName(name: string) {
   ];
 
   return colors[Math.abs(hash) % colors.length];
+}
+
+export function formatDate(date: Date) {
+  return format(date, 'MMMM d, yyyy');
+}
+
+export function getPriorityColor(priority: string) {
+  switch (priority) {
+    case "high":
+      return "text-red-600 dark:text-red-400"
+    case "medium":
+      return "text-yellow-600 dark:text-yellow-400"
+    case "low":
+      return "text-green-600 dark:text-green-400"
+    default:
+      return "text-gray-600 dark:text-gray-400"
+  }
 }

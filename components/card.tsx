@@ -6,13 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CheckSquare, Clock, ImageIcon, Trash2, User } from "lucide-react";
+import { CheckSquare, Clock, ImageIcon, Trash2 } from "lucide-react";
 import Image from "next/image";
 import type { Card as CardType } from "./context/board-context";
 import { useBoard } from "./context/board-context";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getInitials, getColorFromName } from "@/lib/utils";
+import { getInitials, getColorFromName, getPriorityColor, formatDate } from "@/lib/utils";
 
 interface CardProps {
   card: CardType;
@@ -21,7 +21,10 @@ interface CardProps {
 }
 
 export function Card({ card, columnId, onClick }: CardProps) {
+  // Context
   const { deleteCard } = useBoard();
+
+  // dnd-kit Sortable
   const {
     attributes,
     listeners,
@@ -46,26 +49,6 @@ export function Card({ card, columnId, onClick }: CardProps) {
   const completedItems = card.checklist.filter((item) => item.checked).length;
   const totalItems = card.checklist.length;
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "low":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
-    }
-  };
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -91,6 +74,7 @@ export function Card({ card, columnId, onClick }: CardProps) {
         }
       }
     >
+      {/* AlertDialog: delete card */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button

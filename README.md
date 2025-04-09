@@ -5,6 +5,9 @@ A modern, responsive Kanban board application built with Next.js, TypeScript, an
 <div align="center">
     <img src="preview.gif" />
 </div>
+<div align="center">
+    <img src="preview-2.gif" />
+</div>
 
 ## Features
 

@@ -11,18 +11,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Settings, ImageIcon, Palette, Edit, Check } from "lucide-react"
 import { useToast } from "./ui/use-toast"
-import Image from "next/image"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { predefinedColors, predefinedImages } from "@/lib/constants"
 
 export function BoardHeader() {
+  // Context
   const { board, updateBackground } = useBoard()
+  const { toast } = useToast()
+
+  // State 
   const [color, setColor] = useState(board.background.type === "color" ? board.background.value : "#f0f4f8")
   const [imageUrl, setImageUrl] = useState(board.background.type === "image" ? board.background.value : "")
   const [fileInputKey, setFileInputKey] = useState(0)
   const [boardTitle, setBoardTitle] = useState("Kanban Board")
   const [isEditingTitle, setIsEditingTitle] = useState(false)
-  const { toast } = useToast()
-  const isMobile = useIsMobile()
 
   const handleColorChange = (newColor: string) => {
     setColor(newColor)
@@ -65,7 +66,7 @@ export function BoardHeader() {
 
   const handleClearImage = () => {
     setImageUrl("")
-    updateBackground({ type: "color", value: "#f0f4f8" })
+    updateBackground({ type: "color", value: "#f0f4f8" }) // fallback to color
   }
 
   const handleTitleSave = () => {
@@ -76,24 +77,6 @@ export function BoardHeader() {
       setIsEditingTitle(false)
     }
   }
-
-  const predefinedColors = [
-    "#f0f4f8", // Light blue/gray
-    "#f3f4f6", // Light gray
-    "#6898f7", // Light indigo
-    "#90d6a2", // Light green
-    "#fff7ed", // Light orange
-    "#fef2f2", // Light red
-    "#f8fafc", // Light slate
-    "#faf5ff", // Light purple
-  ]
-
-  const predefinedImages = [
-    "https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1579546929662-711aa81148cf?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=1887&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1743191771058-d06e793dda2d?q=80&w=1887&auto=format&fit=crop",
-  ]
 
   return (
     <div className="flex justify-between items-center py-4">
@@ -129,6 +112,7 @@ export function BoardHeader() {
         <PopoverTrigger asChild>
           <Button variant="outline" size="icon">
             <Settings className="h-5 w-5" />
+            {/* sr-only: screen reader only, only visible to screen readers */}
             <span className="sr-only">Board settings</span>
           </Button>
         </PopoverTrigger>
