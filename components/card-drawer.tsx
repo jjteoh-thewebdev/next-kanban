@@ -235,11 +235,20 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
             <Label htmlFor="priority">Priority</Label>
             {isEditing ? (
               <Select
-                value={editedCard.priority}
-                onValueChange={(value: Priority) => setEditedCard({ ...editedCard, priority: value })}
+                  defaultValue={editedCard.priority}
+                  onValueChange={(value: Priority) => {
+                    if (editedCard) {
+                      setEditedCard({
+                        ...editedCard,
+                        priority: value
+                      });
+                    }
+                  }}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select priority" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select priority">
+                      {editedCard.priority.charAt(0).toUpperCase() + editedCard.priority.slice(1)}
+                    </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low</SelectItem>

@@ -70,7 +70,7 @@ export function Column({ column, onCardClick }: ColumnProps) {
         image: null,
         priority: "medium",
         tags: [],
-        assignee: null,
+        assignees: [],
       })
       setNewCardTitle("")
       setIsAddingCard(false)

@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Settings, ImageIcon, Palette, Edit, Check } from "lucide-react"
 import { useToast } from "./ui/use-toast"
 import Image from "next/image"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export function BoardHeader() {
   const { board, updateBackground } = useBoard()
@@ -21,6 +22,7 @@ export function BoardHeader() {
   const [boardTitle, setBoardTitle] = useState("Kanban Board")
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const { toast } = useToast()
+  const isMobile = useIsMobile()
 
   const handleColorChange = (newColor: string) => {
     setColor(newColor)
@@ -177,7 +179,8 @@ export function BoardHeader() {
                       updateBackground({ type: "image", value: presetImage })
                     }}
                   >
-                    <Image
+                    {/* not using next/image because we allow images from open web */}
+                    <img
                       src={presetImage || "/placeholder.svg"}
                       alt="Background option"
                       className="w-full h-full object-cover"
