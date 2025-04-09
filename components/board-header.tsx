@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Settings, ImageIcon, Palette, Edit, Check } from "lucide-react"
 import { useToast } from "./ui/use-toast"
+import Image from "next/image"
 
 export function BoardHeader() {
   const { board, updateBackground } = useBoard()
@@ -176,7 +177,7 @@ export function BoardHeader() {
                       updateBackground({ type: "image", value: presetImage })
                     }}
                   >
-                    <img
+                    <Image
                       src={presetImage || "/placeholder.svg"}
                       alt="Background option"
                       className="w-full h-full object-cover"

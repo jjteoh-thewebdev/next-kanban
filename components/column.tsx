@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Card } from "./card"
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MoreHorizontal, Plus, Trash2, X } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface ColumnProps {
   column: ColumnType
@@ -21,6 +22,23 @@ export function Column({ column, onCardClick }: ColumnProps) {
   const [title, setTitle] = useState(column.title)
   const [isAddingCard, setIsAddingCard] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState("")
+  const [maxHeight, setMaxHeight] = useState("100%")
+  const isMobile = useIsMobile()
+
+  useEffect(() => {
+    const updateMaxHeight = () => {
+      // Adjust height based on viewport, accounting for header and padding
+      const headerHeight = 60; // approximate header height
+      const padding = isMobile ? 120 : 40; // add more padding on mobile for bottom sheet
+      const height = window.innerHeight - headerHeight - padding;
+      setMaxHeight(`${height}px`);
+    };
+
+    updateMaxHeight();
+    window.addEventListener('resize', updateMaxHeight);
+
+    return () => window.removeEventListener('resize', updateMaxHeight);
+  }, [isMobile]);
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: column.id,
@@ -62,8 +80,11 @@ export function Column({ column, onCardClick }: ColumnProps) {
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 w-80 shrink-0 flex flex-col h-full max-h-full"
+      style={{
+        ...style,
+        maxHeight,
+      }}
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 w-80 shrink-0 flex flex-col h-full"
     >
       <div className="flex items-center justify-between mb-3 flex-shrink-0">
         {isEditing ? (

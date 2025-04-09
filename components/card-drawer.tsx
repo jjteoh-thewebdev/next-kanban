@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Image from "next/image"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useToast } from "./ui/use-toast"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
 
 interface CardDrawerProps {
@@ -30,6 +31,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   const [newTag, setNewTag] = useState("")
   const [isEditing, setIsEditing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const isMobile = useIsMobile()
 
   if (!card || !editedCard || !columnId) return null
 
@@ -135,7 +137,13 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   return (
     <>
       <Sheet key={card?.id} open={!!card} onOpenChange={() => onClose()}>
-      <SheetContent className="w-full sm:max-w-md md:max-w-lg overflow-y-auto">
+        <SheetContent
+          side={isMobile ? "bottom" : "right"}
+          className={`overflow-y-auto ${isMobile
+            ? "w-full h-[85vh]"
+            : "w-full h-full sm:max-w-md md:max-w-lg lg:max-w-xl"
+            }`}
+        >
         <SheetHeader className="flex flex-row items-center justify-between">
           <SheetTitle className="flex-1">
             {isEditing ? (

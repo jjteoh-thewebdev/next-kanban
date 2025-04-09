@@ -24,6 +24,7 @@ import { BoardHeader } from "./board-header";
 import { Card } from "./card";
 import { CardDrawer } from "./card-drawer";
 import { Column } from "./column";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function KanbanBoard() {
   // Add PointerSensor to dnd sensor(handle mouse, touch, pen/stylus)
@@ -44,6 +45,7 @@ export function KanbanBoard() {
   } | null>(null);
   const [newColumnTitle, setNewColumnTitle] = useState("");
   const [isAddingColumn, setIsAddingColumn] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -82,7 +84,7 @@ export function KanbanBoard() {
     }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = () => {
     setActiveCard(null);
     setActiveColumnId(null);
   };
@@ -111,13 +113,15 @@ export function KanbanBoard() {
           board.background.type === "color"
             ? board.background.value
             : `url(${board.background.value}) center/cover no-repeat fixed`,
+        minHeight: "100vh",
+        width: "100%",
       }}
     >
       <div className="p-4">
         <BoardHeader />
       </div>
-      <div className="h-full flex-1 p-4 overflow-hidden">
-        <div className="h-full overflow-x-auto">
+      <div className="flex-1 p-4 overflow-hidden">
+        <div className={`h-full overflow-x-auto ${isMobile ? 'pb-20' : 'pb-4'}`}>
           <DndContext
             collisionDetection={closestCenter}
             onDragStart={handleDragStart}
@@ -125,7 +129,7 @@ export function KanbanBoard() {
             onDragEnd={handleDragEnd}
             sensors={sensors}
           >
-            <div className="flex items-start gap-4 h-full pb-4">
+            <div className="flex items-start gap-4 h-full">
               {board.columns.map((column) => (
                 <SortableContext
                   key={column.id}
