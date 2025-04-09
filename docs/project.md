@@ -39,6 +39,9 @@ This document provides a structured overview of the project using the RADIO fram
   - **Task/Card**: Represents individual task with details like title, description, assignees, checklists and etc.
   - **Card Drawer**: Contains specific task details. Support view mode and edit mode.
 
+
+  ![draft](./media/kanban-design.png)
+
 - **Interactions**:
   - Drag and drop tasks between columns
   - Edit task details in a modal or drawer
