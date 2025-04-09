@@ -20,7 +20,7 @@ export type Card = {
   image: string | null;
   priority: Priority;
   tags: string[];
-  assignee: string | null;
+  assignees: string[];
   createdAt: Date;
 };
 
@@ -70,7 +70,7 @@ const initialBoard: BoardState = {
           image: null,
           priority: "medium",
           tags: ["research", "marketing"],
-          assignee: "John Doe",
+          assignees: ["John Doe"],
           createdAt: new Date(),
         },
       ],
@@ -91,7 +91,7 @@ const initialBoard: BoardState = {
           image: null,
           priority: "high",
           tags: ["design", "ui"],
-          assignee: "Jane Smith",
+          assignees: ["Jane Smith", "Alan Tan"],
           createdAt: new Date(),
         },
       ],
@@ -113,7 +113,7 @@ const initialBoard: BoardState = {
           image: null,
           priority: "low",
           tags: ["setup", "dev"],
-          assignee: "Alex Johnson",
+          assignees: ["Alex Wang", "Muhammad Ali"],
           createdAt: new Date(Date.now() - 86400000),
         },
       ],

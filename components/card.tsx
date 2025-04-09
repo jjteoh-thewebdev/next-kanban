@@ -11,6 +11,8 @@ import Image from "next/image";
 import type { Card as CardType } from "./context/board-context";
 import { useBoard } from "./context/board-context";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { getInitials, getColorFromName } from "@/lib/utils";
 
 interface CardProps {
   card: CardType;
@@ -51,6 +53,7 @@ export function Card({ card, columnId, onClick }: CardProps) {
     });
   };
 
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
@@ -78,7 +81,7 @@ export function Card({ card, columnId, onClick }: CardProps) {
       className="bg-white dark:bg-gray-700 rounded-md border-2 border-gray-200 dark:border-gray-600 shadow-sm p-3 mb-2 cursor-pointer hover:shadow-md transition-shadow relative group"
       onClick={
         (e) => {
-          // if the click is not on the delete button, then only show the card drawer
+          // dont show the card drawer if the click is on the delete button
           if (
             e.target instanceof HTMLElement &&
             !e.target.closest('button[data-delete-button="true"]')
@@ -156,13 +159,23 @@ export function Card({ card, columnId, onClick }: CardProps) {
           {card.image && <ImageIcon className="h-3 w-3" />}
         </div>
         <div className="flex items-center gap-2">
-          {card.assignee && (
+          {card.assignees && card.assignees.length > 0 && (
             <span className="flex items-center gap-1">
-              <User className="h-3 w-3" />
-              {card.assignee
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
+              {card.assignees.length === 1 ? (
+                <Avatar className="h-5 w-5">
+                  <AvatarFallback className={`${getColorFromName(card.assignees[0])} text-white text-xs`}>
+                    {getInitials(card.assignees[0])}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <>
+                  <Avatar className="h-5 w-5">
+                    <AvatarFallback className="bg-gray-500 text-white text-xs">
+                      {card.assignees.length}
+                    </AvatarFallback>
+                  </Avatar>
+                </>
+              )}
             </span>
           )}
           <span className="flex items-center gap-1">

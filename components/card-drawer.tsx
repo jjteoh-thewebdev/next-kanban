@@ -16,6 +16,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useToast } from "./ui/use-toast"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { getInitials, getColorFromName } from "@/lib/utils"
 
 interface CardDrawerProps {
   card: CardType | null
@@ -28,6 +30,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   const { toast } = useToast()
   const [editedCard, setEditedCard] = useState<CardType | null>(card ? { ...card } : null)
   const [newChecklistItem, setNewChecklistItem] = useState("")
+  const [newAssignee, setNewAssignee] = useState("")
   const [newTag, setNewTag] = useState("")
   const [isEditing, setIsEditing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -75,6 +78,22 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
     })
   }
 
+  const handleAddAssignee = () => {
+    if (newAssignee.trim() && !editedCard.assignees?.includes(newAssignee.trim())) {
+      setEditedCard({
+        ...editedCard,
+        assignees: [...editedCard.assignees, newAssignee.trim()]
+      })
+      setNewAssignee("")
+    }
+  }
+
+  const handleDeleteAssignee = (assignee: string) => {
+    setEditedCard({
+      ...editedCard,
+      assignees: editedCard.assignees.filter((a) => a !== assignee),
+    })
+  }
   const handleAddTag = () => {
     if (newTag.trim() && !editedCard.tags.includes(newTag.trim())) {
       setEditedCard({
@@ -236,23 +255,41 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="assignee">Assignee</Label>
-            {isEditing ? (
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <Input
-                  id="assignee"
-                  value={editedCard.assignee || ""}
-                  onChange={(e) => setEditedCard({ ...editedCard, assignee: e.target.value || null })}
-                  placeholder="Add assignee..."
-                />
+              <Label htmlFor="assignee">Assignees</Label>
+
+              <div className="flex flex-col flex-wrap gap-2">
+                {editedCard.assignees ?
+                  editedCard.assignees.map((assignee) => (
+                    <div key={assignee} className="flex items-center gap-2">
+                      <Avatar className="h-6 w-6 text-xs">
+                        <AvatarFallback className={`${getColorFromName(assignee)} text-white`}>
+                          {getInitials(assignee)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm text-gray-500">{assignee}</span>
+                      {isEditing && <X className="h-3 w-3 cursor-pointer" onClick={() => handleDeleteAssignee(assignee)} />}
+                    </div>
+                  ))
+                  :
+                  <span>Unassigned</span>
+                }
               </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span>{editedCard.assignee || "Unassigned"}</span>
-              </div>
-            )}
+              {isEditing && (
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <Input
+                    id="assignee"
+                    value={newAssignee || ""}
+                    onChange={(e) => setNewAssignee(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleAddAssignee()
+                    }}
+                    placeholder="Add assignee..."
+                  />
+                </div>
+              )
+              }
+
           </div>
 
           <div className="space-y-2">
