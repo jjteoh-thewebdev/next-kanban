@@ -3,14 +3,8 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
   experimental: {
-    webpackBuildWorker: true,
+    // webpackBuildWorker: true, -- turbopack
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
