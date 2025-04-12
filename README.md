@@ -3,10 +3,10 @@
 A modern, responsive Kanban board application built with Next.js, TypeScript, and Tailwind CSS.
 
 <div align="center">
-    <img src="preview.gif" />
+    <img src="preview.gif" width=400 />
 </div>
 <div align="center">
-    <img src="preview-2.gif" />
+    <img src="preview-2.gif" width=400 />
 </div>
 
 ## Features
