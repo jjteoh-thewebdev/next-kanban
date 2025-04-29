@@ -22,6 +22,8 @@ export type Card = {
   tags: string[];
   assignees: string[];
   createdAt: Date;
+  updatedAt: Date;
+  dueAt: Date | null;
 };
 
 export type Column = {
@@ -45,7 +47,7 @@ type BoardContextType = {
   addColumn: (title: string) => void;
   updateColumn: (id: string, title: string) => void;
   deleteColumn: (id: string) => void;
-  addCard: (columnId: string, card: Omit<Card, "id" | "createdAt">) => void;
+  addCard: (columnId: string, card: Omit<Card, "id" | "createdAt" | "updatedAt">) => void;
   updateCard: (columnId: string, card: Card) => void;
   deleteCard: (columnId: string, cardId: string) => void;
   moveCard: (fromColumnId: string, toColumnId: string, cardId: string) => void;
@@ -72,6 +74,8 @@ const initialBoard: BoardState = {
           tags: ["research", "marketing"],
           assignees: ["John Doe"],
           createdAt: new Date(),
+          updatedAt: new Date(),
+          dueAt: null,
         },
       ],
     },
@@ -93,6 +97,8 @@ const initialBoard: BoardState = {
           tags: ["design", "ui"],
           assignees: ["Jane Smith", "Alan Tan"],
           createdAt: new Date(),
+          updatedAt: new Date(),
+          dueAt: null,
         },
       ],
     },
@@ -115,6 +121,8 @@ const initialBoard: BoardState = {
           tags: ["setup", "dev"],
           assignees: ["Alex Wang", "Muhammad Ali"],
           createdAt: new Date(Date.now() - 86400000),
+          updatedAt: new Date(),
+          dueAt: new Date(Date.now() - 86400000),
         },
       ],
     },
@@ -154,7 +162,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const addCard = (columnId: string, card: Omit<Card, "id" | "createdAt">) => {
+  const addCard = (columnId: string, card: Omit<Card, "id" | "createdAt" | "updatedAt">) => {
     setBoard((prev) => ({
       ...prev,
       columns: prev.columns.map((col) => {
@@ -167,6 +175,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 ...card,
                 id: nanoid(),
                 createdAt: new Date(),
+                updatedAt: new Date(),
               },
             ],
           };

@@ -6,13 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CheckSquare, Clock, ImageIcon, Trash2 } from "lucide-react";
+import { Calendar, Calendar1, CheckSquare, Clock, ImageIcon, Trash2 } from "lucide-react";
 import Image from "next/image";
 import type { Card as CardType } from "./context/board-context";
 import { useBoard } from "./context/board-context";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getInitials, getColorFromName, getPriorityColor, formatDate } from "@/lib/utils";
+import { getInitials, getColorFromName, getPriorityColor, formatDate, cn } from "@/lib/utils";
 
 interface CardProps {
   card: CardType;
@@ -162,10 +162,12 @@ export function Card({ card, columnId, onClick }: CardProps) {
               )}
             </span>
           )}
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {formatDate(card.createdAt)}
-          </span>
+          {card.dueAt && (
+            <span className={cn("flex items-center gap-1", new Date(card.dueAt) < new Date() ? "text-red-500" : "text-gray-500")}>
+              <Calendar1 className="h-3 w-3" />
+              {formatDate(card.dueAt)}
+            </span>
+          )}
         </div>
       </div>
     </div>

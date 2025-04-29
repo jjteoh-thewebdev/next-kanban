@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { nanoid } from "nanoid"
-import { Clock, Edit, ImageIcon, Plus, Save, Tag, Trash2, User, X } from "lucide-react"
+import { Calendar1, Clock, Edit, ImageIcon, Plus, Save, Tag, Trash2, User, X } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Image from "next/image"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -17,7 +17,9 @@ import { useToast } from "./ui/use-toast"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { getInitials, getColorFromName, formatDate, getPriorityColor } from "@/lib/utils"
+import { getInitials, getColorFromName, formatDate, getPriorityColor, cn } from "@/lib/utils"
+import { Calendar } from "./ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface CardDrawerProps {
   card: CardType | null
@@ -38,6 +40,8 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   const [newTag, setNewTag] = useState("")
   const [isEditing, setIsEditing] = useState(false)
   const [isExitConfirmationOpen, setIsExitConfirmationOpen] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
+
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -66,6 +70,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
         checklist: [...editedCard.checklist, { id: nanoid(), text: newChecklistItem, checked: false }],
       })
       setNewChecklistItem("")
+      setHasChanges(true)
     }
   }
 
@@ -74,6 +79,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
       ...editedCard,
       checklist: editedCard.checklist.map((item) => (item.id === itemId ? { ...item, checked } : item)),
     })
+    setHasChanges(true)
   }
 
   const handleDeleteChecklistItem = (itemId: string) => {
@@ -81,6 +87,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
       ...editedCard,
       checklist: editedCard.checklist.filter((item) => item.id !== itemId),
     })
+    setHasChanges(true)
   }
 
   const handleAddAssignee = () => {
@@ -90,6 +97,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
         assignees: [...editedCard.assignees, newAssignee.trim()]
       })
       setNewAssignee("")
+      setHasChanges(true)
     }
   }
 
@@ -98,7 +106,9 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
       ...editedCard,
       assignees: editedCard.assignees.filter((a) => a !== assignee),
     })
+    setHasChanges(true)
   }
+
   const handleAddTag = () => {
     if (newTag.trim() && !editedCard.tags.includes(newTag.trim())) {
       setEditedCard({
@@ -106,6 +116,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
         tags: [...editedCard.tags, newTag.trim()],
       })
       setNewTag("")
+      setHasChanges(true)
     }
   }
 
@@ -114,6 +125,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
       ...editedCard,
       tags: editedCard.tags.filter((t) => t !== tag),
     })
+    setHasChanges(true)
   }
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -127,6 +139,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
           ...editedCard,
           image: event.target?.result as string,
         })
+        setHasChanges(true)
       }
       reader.readAsDataURL(file)
     }
@@ -137,6 +150,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
       ...editedCard,
       image: null,
     })
+    setHasChanges(true)
   }
 
   const handleExitWithoutSave = () => {
@@ -154,7 +168,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   }
 
   const handleClose = () => {
-    if (isEditing && editedCard) {
+    if (isEditing && hasChanges) {
       // show a confirmation dialog
       setIsExitConfirmationOpen(true)
     } else {
@@ -240,10 +254,16 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Clock className="h-4 w-4" />
+            <div className="flex flex-col gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
               Created on {formatDate(new Date(editedCard.createdAt))}
-          </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                Last updated on {formatDate(new Date(editedCard.updatedAt))}
+              </div>
+            </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
@@ -293,6 +313,42 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
               </div>
             )}
           </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="dueAt">Due on</Label>
+              {isEditing ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <Calendar1 className="mr-2 h-4 w-4" />
+                      {editedCard.dueAt ? (
+                        formatDate(new Date(editedCard.dueAt))
+                      ) : (
+                        "Choose a date"
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={editedCard.dueAt ? new Date(editedCard.dueAt) : undefined}
+                      onSelect={(date: Date | undefined) => date && setEditedCard({ ...editedCard, dueAt: date })}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Calendar1 className="h-4 w-4" />
+                  <span className={cn("text-sm", editedCard.dueAt && new Date(editedCard.dueAt) < new Date() ? "text-red-500" : "text-gray-500")}>
+                    {editedCard.dueAt ? formatDate(new Date(editedCard.dueAt)) : "Not specified"}
+                  </span>
+                </div>
+              )}
+            </div>
 
           <div className="space-y-2">
               <Label htmlFor="assignee">Assignees</Label>

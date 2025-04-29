@@ -75,6 +75,7 @@ export function Column({ column, onCardClick }: ColumnProps) {
         priority: "medium",
         tags: [],
         assignees: [],
+        dueAt: null,
       })
       setNewCardTitle("")
       setIsAddingCard(false)
