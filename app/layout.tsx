@@ -20,7 +20,9 @@ export default function RootLayout({
         {children}
         <Toaster />
 
-        <Analytics />
+        {process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true" && (
+          <Analytics />
+        )}
       </body>
 
     </html>

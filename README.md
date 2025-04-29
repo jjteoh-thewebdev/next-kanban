@@ -61,18 +61,20 @@ cd next-kanban
 pnpm install
 ```
 
-3. Run the development server:
+3. Create `.env` file(adjust the variables base on your need)
+```bash
+cp sample.env .env
+```
+
+4. Run the development server:
 ```bash
 pnpm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
 
-## Credit
-
-This project is bootstrapped from [Vercel](https://vercel.com/)
