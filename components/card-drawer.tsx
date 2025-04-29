@@ -37,7 +37,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
   const [newAssignee, setNewAssignee] = useState("")
   const [newTag, setNewTag] = useState("")
   const [isEditing, setIsEditing] = useState(false)
-
+  const [isExitConfirmationOpen, setIsExitConfirmationOpen] = useState(false)
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -139,10 +139,33 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
     })
   }
 
+  const handleExitWithoutSave = () => {
+    setIsExitConfirmationOpen(false)
+    onClose()
+
+    setEditedCard(null)
+  }
+
+  const handleSaveAndExit = () => {
+    handleSave()
+    onClose()
+
+    setEditedCard(null)
+  }
+
+  const handleClose = () => {
+    if (isEditing && editedCard) {
+      // show a confirmation dialog
+      setIsExitConfirmationOpen(true)
+    } else {
+      onClose()
+    }
+  }
+
 
   return (
     <>
-      <Sheet key={card?.id} open={!!card} onOpenChange={() => onClose()}>
+      <Sheet key={card?.id} open={!!card} onOpenChange={() => handleClose()}>
         <SheetContent
           side={isMobile ? "bottom" : "right"}
           className={`overflow-y-auto ${isMobile
@@ -173,6 +196,7 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
               </Button>
             )}
 
+              {/* Delete card confirmation dialog */}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="ghost" size="icon" className="text-red-500">
@@ -188,6 +212,26 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              {/* Exit without save confirmation dialog */}
+              <AlertDialog open={isExitConfirmationOpen} onOpenChange={setIsExitConfirmationOpen}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>You have unsaved changes</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You have uncommitted changes. Do you want to save the changes before exiting?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <Button variant="outline" onClick={handleExitWithoutSave}>
+                      Exit without save
+                    </Button>
+                    <Button onClick={handleSaveAndExit}>
+                      Save and exit
+                    </Button>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -414,6 +458,8 @@ export function CardDrawer({ card, columnId, onClose }: CardDrawerProps) {
         </div>
       </SheetContent>
       </Sheet>
+
+
     </>
   )
 }
